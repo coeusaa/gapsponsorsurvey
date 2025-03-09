@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gap Sponsor Survey</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .section {
+            margin-bottom: 30px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background-color: #f5f5f5;
+        }
+        .error {
+            color: red;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <h1>Gap Sponsor Survey</h1>
+    
+    <div class="section">
+        <label for="name">Name:</label>
+        <input type="text" id="name" required>
+        <p class="error" id="nameError">Please enter your name</p>
+    </div>
+
+    <div class="section">
+        <h3>Rate your level of agreement with the following statements relative to other Gap Sponsors</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Statement</th>
+                    <th>Disagree</th>
+                    <th>Slightly Disagree</th>
+                    <th>Neither</th>
+                    <th>Slightly Agree</th>
+                    <th>Agree</th>
+                </tr>
+            </thead>
+            <tbody id="section1"></tbody>
+        </table>
+    </div>
+
+    <div class="section">
+        <h3>Rate your level of agreement with the following statements in comparison to other Gap Sponsors</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Statement</th>
+                    <th>Very much like me</th>
+                    <th>Mostly like me</th>
+                    <th>Somewhat like me</th>
+                    <th>Not much like me</th>
+                    <th>Not like me at all</th>
+                </tr>
+            </thead>
+            <tbody id="section2"></tbody>
+        </table>
+    </div>
+
+    <button onclick="saveSurvey()">Submit Survey</button>
+
+    <script>
+        const section1Questions = [
+            "Believe that my success depends on ability rather than luck",
+            "Like to take responsibility for making decisions",
+            "Make a decision and move on",
+            "I'm my own boss",
+            "If I work hard, I will succeed",
+            "What I do is mainly determined by others",
+            "Unfortunate events occur because of bad luck",
+            "The world is controlled by a few powerful people",
+            "Some people are born lucky",
+            "Believe in the power of fate",
+            "Fate often gets in the way of my plans",
+            "My plans are often disrupted by the actions of others"
+        ];
+
+        const section2Questions = [
+            "I have overcome setbacks to conquer an important challenge",
+            "New ideas and projects sometimes distract me from previous ones",
+            "My interests change from year to year",
+            "Setbacks don’t discourage me",
+            "I have been obsessed with a certain idea or project for a short time but later lost interest",
+            "I am a hard worker",
+            "I often set a goal but later choose to pursue a different one",
+            "I have difficulty maintaining my focus on projects that take more than a few months to complete",
+            "I finish whatever I begin",
+            "I have achieved a goal that took years of work",
+            "I become interested in new pursuits every few months",
+            "I am diligent"
+        ];
+
+        const section1Options = ["Disagree", "Slightly Disagree", "Neither Agree nor Disagree", "Slightly Agree", "Agree"];
+        const section2Options = ["Very much like me", "Mostly like me", "Somewhat like me", "Not much like me", "Not like me at all"];
+
+        // Populate Section 1
+        const section1Body = document.getElementById("section1");
+        section1Questions.forEach((question, index) => {
+            const row = document.createElement("tr");
+            row.innerHTML = `
+                <td>${question}</td>
+                ${section1Options.map(option => `
+                    <td><input type="radio" name="s1q${index}" value="${option}" required></td>
+                `).join('')}
+            `;
+            section1Body.appendChild(row);
+        });
+
+        // Populate Section 2
+        const section2Body = document.getElementById("section2");
+        section2Questions.forEach((question, index) => {
+            const row = document.createElement("tr");
+            row.innerHTML = `
+                <td>${question}</td>
+                ${section2Options.map(option => `
+                    <td><input type="radio" name="s2q${index}" value="${option}" required></td>
+                `).join('')}
+            `;
+            section2Body.appendChild(row);
+        });
+
+        function saveSurvey() {
+            const name = document.getElementById("name").value.trim();
+            if (!name) {
+                document.getElementById("nameError").style.display = "block";
+                return;
+            }
+
+            let results = `Survey Results for ${name}\n\nSection 1:\n`;
+            section1Questions.forEach((question, index) => {
+                const selected = document.querySelector(`input[name="s1q${index}"]:checked`);
+                results += `${question}: ${selected ? selected.value : "Not answered"}\n`;
+            });
+
+            results += "\nSection 2:\n";
+            section2Questions.forEach((question, index) => {
+                const selected = document.querySelector(`input[name="s2q${index}"]:checked`);
+                results += `${question}: ${selected ? selected.value : "Not answered"}\n`;
+            });
+
+            // Create and download file
+            const blob = new Blob([results], { type: "text/plain" });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = `survey_results_${name}.txt`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);
+        }
+    </script>
+</body>
+</html>
