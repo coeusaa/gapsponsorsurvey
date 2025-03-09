@@ -158,27 +158,24 @@
             });
 
             // GitHub API request
-            const githubUsername = "coeusaa";  
-            const repoName = "gapsponsorsurvey";  
-            const token = "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"; 
-
-            const issueData = { title: `Survey Response from ${name}`, body: results };
-
-            const response = await fetch(`https://api.github.com/repos/${githubUsername}/${repoName}/issues`, {
+            const response = await fetch("https://api.github.com/repos/coeusaa/gapsponsorsurvey/issues", {
                 method: "POST",
                 headers: {
-                    "Authorization": `token ${token}`,
-                    "Accept": "application/vnd.github.v3+json",
-                    "Content-Type": "application/json"
+                    "Authorization": `Bearer YOUR_GITHUB_TOKEN`,  // Updated authentication method
+                    "Accept": "application/vnd.github.v3+json"
                 },
-                body: JSON.stringify(issueData)
+                body: JSON.stringify({
+                    title: `Survey Response from ${name}`,
+                    body: results
+                })
             });
 
             if (response.ok) {
                 alert("Survey submitted! Responses are saved as a GitHub issue.");
             } else {
-                alert("Error saving the survey.");
-                console.error(await response.json());
+                const errorData = await response.json();
+                console.error("Error saving the survey:", errorData);
+                alert("Error saving the survey. Check console for details.");
             }
         }
     </script>
